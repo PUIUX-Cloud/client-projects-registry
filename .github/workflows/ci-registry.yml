@@ -1,0 +1,81 @@
+name: CI - Client Registry
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate JSON syntax
+        shell: bash
+        run: |
+          set -e
+          echo "Validating clients.json syntax..."
+          jq empty clients.json
+          echo "✅ JSON syntax valid"
+
+      - name: Validate JSON structure
+        shell: bash
+        run: |
+          set -e
+          echo "Checking required fields..."
+          
+          total=$(jq '.total_clients' clients.json)
+          actual=$(jq '.clients | length' clients.json)
+          
+          if [ "$total" -ne "$actual" ]; then
+            echo "❌ total_clients ($total) != actual count ($actual)"
+            exit 1
+          fi
+          
+          echo "✅ total_clients matches actual count: $total"
+
+      - name: Check for duplicate slugs
+        shell: bash
+        run: |
+          set -e
+          echo "Checking for duplicate slugs..."
+          
+          slugs=$(jq -r '.clients[].slug' clients.json | sort)
+          duplicates=$(echo "$slugs" | uniq -d)
+          
+          if [ -n "$duplicates" ]; then
+            echo "❌ Duplicate slugs found:"
+            echo "$duplicates"
+            exit 1
+          fi
+          
+          echo "✅ No duplicate slugs"
+
+      - name: Validate required fields per client
+        shell: bash
+        run: |
+          set -e
+          echo "Validating required fields..."
+          
+          # Check each client has required fields
+          jq -e '.clients[] | select(.slug == null or .name == null or .tier == null or .pod == null or .stack == null)' clients.json && {
+            echo "❌ Missing required fields in one or more clients"
+            exit 1
+          } || echo "✅ All clients have required fields"
+
+      - name: Run registry validator (if exists)
+        shell: bash
+        run: |
+          set -e
+          if [ -f validate.sh ]; then
+            echo "Running validate.sh..."
+            chmod +x validate.sh
+            ./validate.sh
+          else
+            echo "⚠️  No validate.sh found - skipping"
+          fi
