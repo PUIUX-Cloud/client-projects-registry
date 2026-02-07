@@ -235,12 +235,88 @@ jobs:
             npx --yes ajv-cli@5 validate \
               -s schemas/clients.schema.json \
               -d clients.json \
-              --strict=false \
-              --verbose
+              -c ajv-formats \
+              --all-errors \
+              --strict=false
             echo "✅ Schema validation passed"
           else
             echo "⚠️  No schema found - skipping schema validation"
           fi
+
+      - name: Check for duplicate repos
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Checking for duplicate repo names..."
+          
+          repos=$(jq -r '.clients[].repo' clients.json | sort)
+          duplicates=$(echo "$repos" | uniq -d)
+          
+          if [ -n "$duplicates" ]; then
+            echo "❌ Duplicate repo names found:"
+            echo "$duplicates"
+            exit 1
+          fi
+          
+          echo "✅ No duplicate repos"
+
+      - name: Check for duplicate production domains
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Checking for duplicate production domains..."
+          
+          domains=$(jq -r '.clients[].domains.production' clients.json | sort)
+          duplicates=$(echo "$domains" | uniq -d)
+          
+          if [ -n "$duplicates" ]; then
+            echo "❌ Duplicate production domains found:"
+            echo "$duplicates"
+            exit 1
+          fi
+          
+          echo "✅ No duplicate production domains"
+
+      - name: Validate billing consistency
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Validating billing math (paid + outstanding = total_value)..."
+          
+          invalid=$(jq -r '
+            .clients[]
+            | select(.billing)
+            | select((.billing.paid + .billing.outstanding) != .billing.total_value)
+            | .slug
+          ' clients.json || true)
+          
+          if [ -n "$invalid" ]; then
+            echo "❌ Billing inconsistency in clients:"
+            echo "$invalid"
+            exit 1
+          fi
+          
+          echo "✅ Billing math consistent"
+
+      - name: Validate date logic
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Validating updated >= created..."
+          
+          invalid=$(jq -r '
+            .clients[]
+            | select(.updated < .created)
+            | .slug
+          ' clients.json || true)
+          
+          if [ -n "$invalid" ]; then
+            echo "❌ Invalid dates (updated < created):"
+            echo "$invalid"
+            exit 1
+          fi
+          
+          echo "✅ Date logic valid"
 
       - name: Run registry validator (if exists)
         shell: bash
