@@ -1,7 +1,7 @@
 {
   "registry_version": "1.0.0",
   "last_updated": "2026-02-07",
-  "total_clients": 1,
+  "total_clients": 2,
   "clients": [
     {
       "id": "client-demo-001",
@@ -47,6 +47,51 @@
         }
       },
       "notes": "Demo client for testing Gates system and workflows."
+    },
+    {
+      "id": "client-demo-002",
+      "slug": "demo-retail",
+      "name": "RetailPro Solutions (Demo)",
+      "tier": "beta",
+      "pod": "enterprise",
+      "stack": "laravel",
+      "repo": "client-demo-retail",
+      "repo_visibility": "private",
+      "deployment_mode": "ssh",
+      "domains": {
+        "beta": "demo-retail.puiux.cloud",
+        "staging": "staging.demo-retail.puiux.cloud",
+        "production": "retailpro.sa"
+      },
+      "gates": {
+        "payment_verified": false,
+        "dns_verified": false,
+        "ssl_verified": false
+      },
+      "status": "presales",
+      "presales_stage": "PS0",
+      "created": "2026-02-07",
+      "updated": "2026-02-07",
+      "limits": {
+        "storage_gb": 20,
+        "bandwidth_gb": 200,
+        "users": 100
+      },
+      "billing": {
+        "plan": "beta-free",
+        "total_value": 0,
+        "paid": 0,
+        "outstanding": 0,
+        "invoices": []
+      },
+      "contacts": {
+        "primary": {
+          "name": "Sarah Ahmed",
+          "email": "sarah@retailpro.sa",
+          "phone": "+966-50-123-4567"
+        }
+      },
+      "notes": "Demo retail client for testing multi-branch POS workflows."
     }
   ]
 }
