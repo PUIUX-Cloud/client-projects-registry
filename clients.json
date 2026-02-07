@@ -1,0 +1,52 @@
+{
+  "registry_version": "1.0.0",
+  "last_updated": "2026-02-07",
+  "total_clients": 1,
+  "clients": [
+    {
+      "id": "client-demo-001",
+      "slug": "demo-acme",
+      "name": "ACME Corporation (Demo)",
+      "tier": "beta",
+      "pod": "corporate",
+      "stack": "laravel",
+      "repo": "client-demo-acme",
+      "repo_visibility": "private",
+      "deployment_mode": "ssh",
+      "domains": {
+        "beta": "demo-acme.puiux.cloud",
+        "staging": "staging.demo-acme.puiux.cloud",
+        "production": "demo-acme.com"
+      },
+      "gates": {
+        "payment_verified": false,
+        "dns_verified": false,
+        "ssl_verified": false
+      },
+      "status": "presales",
+      "presales_stage": "PS0",
+      "created": "2026-02-07",
+      "updated": "2026-02-07",
+      "limits": {
+        "storage_gb": 10,
+        "bandwidth_gb": 100,
+        "users": 50
+      },
+      "billing": {
+        "plan": "beta-free",
+        "total_value": 0,
+        "paid": 0,
+        "outstanding": 0,
+        "invoices": []
+      },
+      "contacts": {
+        "primary": {
+          "name": "Demo Contact",
+          "email": "demo@acme.com",
+          "phone": "+1-555-0100"
+        }
+      },
+      "notes": "Demo client for testing Gates system and workflows."
+    }
+  ]
+}
