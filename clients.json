@@ -21,7 +21,8 @@
       "gates": {
         "payment_verified": false,
         "dns_verified": false,
-        "ssl_verified": false
+        "ssl_verified": false,
+        "contract_signed": false
       },
       "status": "presales",
       "presales_stage": "PS0",
@@ -66,7 +67,8 @@
       "gates": {
         "payment_verified": false,
         "dns_verified": false,
-        "ssl_verified": false
+        "ssl_verified": false,
+        "contract_signed": false
       },
       "status": "presales",
       "presales_stage": "PS0",
